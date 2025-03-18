@@ -6,7 +6,7 @@
       [categoryType]: true 
     }"
   >
-    <div class="checkbox-container">
+    <div class="task-content">
       <input 
         type="checkbox" 
         :id="task.id"
@@ -14,35 +14,35 @@
         @change="toggleComplete"
         class="task-checkbox"
       />
-      <span class="checkmark"></span>
+      <label :for="task.id" class="task-label">
+        <span class="task-title">{{ task.title }}</span>
+        <span v-if="task.description" class="task-description">{{ task.description }}</span>
+      </label>
     </div>
-    <label :for="task.id" class="task-label">
-      <span class="task-title">{{ task.title }}</span>
-      <span class="task-description">{{ task.description }}</span>
-    </label>
+    
     <div class="task-actions">
       <button 
-        @click.stop="editTask" 
         class="action-button edit-button" 
-        :disabled="task.completed"
+        @click="$emit('edit-task', categoryType, task.id)"
         :aria-label="'Edytuj zadanie: ' + task.title"
       >
-        ✏️
+        <span class="action-icon">✎</span>
       </button>
+      
       <button 
-        @click.stop="swapTask" 
         class="action-button swap-button" 
-        :disabled="task.completed"
+        @click="$emit('swap-task', categoryType, task.id)"
         :aria-label="'Zamień zadanie: ' + task.title"
       >
-        🔄
+        <span class="action-icon">↻</span>
       </button>
+      
       <button 
-        @click.stop="deleteTask" 
-        class="action-button delete-button"
+        class="action-button delete-button" 
+        @click="$emit('delete-task', categoryType, task.id)"
         :aria-label="'Usuń zadanie: ' + task.title"
       >
-        🗑️
+        <span class="action-icon">×</span>
       </button>
     </div>
   </div>
@@ -66,108 +66,83 @@ const emit = defineEmits<{
 const toggleComplete = () => {
   emit('toggle-complete', props.categoryType, props.task.id)
 }
-
-const editTask = () => {
-  if (!props.task.completed) {
-    emit('edit-task', props.categoryType, props.task.id)
-  }
-}
-
-const deleteTask = () => {
-  emit('delete-task', props.categoryType, props.task.id)
-}
-
-const swapTask = () => {
-  if (!props.task.completed) {
-    emit('swap-task', props.categoryType, props.task.id)
-  }
-}
 </script>
 
 <style scoped>
 .task-item {
   display: flex;
-  align-items: flex-start;
-  padding: 12px;
-  margin-bottom: 8px;
-  border-radius: 8px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-radius: var(--border-radius);
+  background-color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 2px 4px var(--shadow-light);
   transition: all 0.3s ease;
-  background-color: #f9f9f9;
-  position: relative;
+  overflow: hidden;
 }
 
 .task-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 2px 8px var(--shadow-light);
+  box-shadow: 0 4px 8px var(--shadow-light);
 }
 
-.task-item:hover .task-actions {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.checkbox-container {
-  position: relative;
-  margin-right: 15px;
-  min-width: 22px;
-  height: 22px;
-  margin-top: 2px;
+.task-content {
+  display: flex;
+  align-items: flex-start;
+  flex: 1;
+  min-width: 0; /* Prevent text overflow */
 }
 
 .task-checkbox {
-  position: absolute;
-  opacity: 0;
-  cursor: pointer;
-  height: 0;
-  width: 0;
-}
-
-.checkmark {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 22px;
-  width: 22px;
+  margin-right: 15px;
+  appearance: none;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   border: 2px solid;
-  transition: all 0.2s ease;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
 }
 
-.physical .checkmark {
-  border-color: var(--physical-color);
+.task-checkbox:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 12px;
+  color: white;
 }
 
-.mental .checkmark {
-  border-color: var(--mental-color);
+.physical .task-checkbox { 
+  border-color: var(--physical-color); 
+}
+.mental .task-checkbox { 
+  border-color: var(--mental-color); 
+}
+.personal .task-checkbox { 
+  border-color: var(--personal-color); 
+}
+.relationship .task-checkbox { 
+  border-color: var(--relationship-color); 
 }
 
-.personal .checkmark {
-  border-color: var(--personal-color);
-}
-
-.relationship .checkmark {
-  border-color: var(--relationship-color);
-}
-
-.task-checkbox:checked ~ .checkmark {
+.task-checkbox:checked {
   background-color: currentColor;
 }
 
-.checkmark:after {
-  content: "";
-  position: absolute;
-  display: none;
+.physical .task-checkbox:checked { 
+  background-color: var(--physical-color); 
 }
-
-.task-checkbox:checked ~ .checkmark:after {
-  display: block;
-  left: 7px;
-  top: 3px;
-  width: 5px;
-  height: 10px;
-  border: solid white;
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
+.mental .task-checkbox:checked { 
+  background-color: var(--mental-color); 
+}
+.personal .task-checkbox:checked { 
+  background-color: var(--personal-color); 
+}
+.relationship .task-checkbox:checked { 
+  background-color: var(--relationship-color); 
 }
 
 .task-label {
@@ -175,103 +150,85 @@ const swapTask = () => {
   flex-direction: column;
   cursor: pointer;
   flex: 1;
-  padding-right: 35px; /* Miejsce na przyciski akcji */
+  min-width: 0; /* Prevent text overflow */
 }
 
 .task-title {
-  font-weight: 500;
-  margin-bottom: 3px;
-  line-height: 1.3;
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .task-description {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: var(--text-muted);
-  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.completed {
-  background-color: #f4f4f4;
-}
-
-.completed .task-title {
-  text-decoration: line-through;
-  color: #888;
-}
-
+.completed .task-title,
 .completed .task-description {
   text-decoration: line-through;
-  color: #999;
-}
-
-/* Animation for completion */
-.completed .checkmark {
-  animation: pulse 0.6s ease-in-out;
+  color: var(--text-muted);
 }
 
 .task-actions {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%) translateX(10px);
   display: flex;
   gap: 5px;
   opacity: 0;
-  transition: all 0.3s ease;
+  transition: opacity 0.3s ease;
+}
+
+.task-item:hover .task-actions {
+  opacity: 1;
 }
 
 .action-button {
   background: none;
   border: none;
-  font-size: 1rem;
   cursor: pointer;
-  padding: 5px;
-  border-radius: 4px;
-  transition: all 0.2s ease;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
 }
 
-.action-button:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+.action-icon {
+  font-size: 14px;
 }
 
-.action-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.edit-button {
+  color: #3498db;
 }
 
 .edit-button:hover {
-  transform: scale(1.1);
+  background-color: rgba(52, 152, 219, 0.1);
 }
 
-.delete-button:hover {
-  transform: scale(1.1);
-  color: #ff3333;
+.swap-button {
+  color: #f39c12;
 }
 
 .swap-button:hover {
-  transform: scale(1.1) rotate(180deg);
+  background-color: rgba(243, 156, 18, 0.1);
 }
 
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.3);
-  }
-  100% {
-    transform: scale(1);
-  }
+.delete-button {
+  color: #e74c3c;
 }
 
-@media (max-width: 480px) {
+.delete-button:hover {
+  background-color: rgba(231, 76, 60, 0.1);
+}
+
+@media (max-width: 768px) {
   .task-actions {
-    opacity: 0.7;
-    transform: translateY(-50%) translateX(0);
-  }
-  
-  .action-button {
-    font-size: 0.9rem;
+    opacity: 1;
   }
 }
 </style>

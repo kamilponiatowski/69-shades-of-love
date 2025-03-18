@@ -2,56 +2,38 @@
     <div class="task-creator-modal" @click.self="close">
       <div class="modal-content">
         <div class="modal-header">
-          <h2>{{ isEditing ? 'Edytuj zadanie' : 'Dodaj nowe zadanie' }}</h2>
-          <button @click="close" aria-label="Zamknij">✕</button>
+          <h2>{{ isEditMode ? 'Edytuj zadanie' : 'Nowe zadanie' }}</h2>
+          <button @click="close" class="close-button">&times;</button>
         </div>
+        
         <div class="modal-body">
           <form @submit.prevent="saveTask">
             <div class="form-group">
-              <label for="task-category">Kategoria:</label>
-              <select 
-                id="task-category" 
-                v-model="taskForm.category" 
-                class="form-input"
-                :class="taskForm.category"
-                required
-              >
-                <option value="">Wybierz kategorię</option>
-                <option value="physical">Fizyczne</option>
-                <option value="mental">Umysłowe</option>
-                <option value="personal">Osobiste</option>
-                <option value="relationship">Relacje</option>
-              </select>
-            </div>
-            
-            <div class="form-group">
-              <label for="task-title">Tytuł zadania:</label>
+              <label for="task-title">Tytuł</label>
               <input 
                 id="task-title" 
+                v-model="formData.title" 
                 type="text" 
-                v-model="taskForm.title" 
-                class="form-input"
-                required
-                maxlength="50"
-                placeholder="Np. Poranna medytacja"
+                required 
+                maxlength="100"
+                placeholder="Krótki, treściwy tytuł zadania"
               >
             </div>
             
             <div class="form-group">
-              <label for="task-description">Opis zadania:</label>
+              <label for="task-description">Opis</label>
               <textarea 
                 id="task-description" 
-                v-model="taskForm.description" 
-                class="form-input"
+                v-model="formData.description" 
+                maxlength="250"
                 rows="3"
-                maxlength="200"
-                placeholder="Np. 10 minut medytacji tuż po przebudzeniu"
+                placeholder="Opcjonalny opis zadania"
               ></textarea>
             </div>
             
-            <div class="form-actions">
+            <div class="modal-footer">
               <button type="button" @click="close" class="cancel-button">Anuluj</button>
-              <button type="submit" class="save-button">{{ isEditing ? 'Zapisz zmiany' : 'Dodaj zadanie' }}</button>
+              <button type="submit" class="save-button" :disabled="!formData.title">Zapisz</button>
             </div>
           </form>
         </div>
@@ -65,8 +47,8 @@
   import type { Task } from '@/types'
   
   const props = defineProps<{
-    task?: Task | null
-    categoryType?: string
+    task: Task | null
+    categoryType: string
   }>()
   
   const emit = defineEmits<{
@@ -74,48 +56,47 @@
     (e: 'save', task: Task): void
   }>()
   
-  // Określamy czy to tryb edycji czy tworzenia nowego zadania
-  const isEditing = computed(() => !!props.task)
+  const isEditMode = computed(() => !!props.task)
   
-  // Formularz z danymi zadania
-  const taskForm = ref({
+  const formData = ref({
     id: '',
     title: '',
     description: '',
-    category: props.categoryType || '',
+    category: props.categoryType as 'physical' | 'mental' | 'personal' | 'relationship',
     completed: false
   })
   
-  // Inicjalizacja formularza
   onMounted(() => {
     if (props.task) {
-      taskForm.value = {
-        id: props.task.id,
-        title: props.task.title,
-        description: props.task.description,
-        category: props.task.category,
-        completed: props.task.completed
+      formData.value = { ...props.task }
+    } else {
+      // Nowe zadanie - ustaw tylko kategorię
+      formData.value = {
+        id: uuidv4(),
+        title: '',
+        description: '',
+        category: props.categoryType as 'physical' | 'mental' | 'personal' | 'relationship',
+        completed: false
       }
     }
   })
   
-  // Zapisywanie zadania
-  const saveTask = () => {
-    const task: Task = {
-      id: taskForm.value.id || uuidv4(),
-      title: taskForm.value.title,
-      description: taskForm.value.description,
-      category: taskForm.value.category as 'physical' | 'mental' | 'personal' | 'relationship',
-      completed: taskForm.value.completed
-    }
-    
-    emit('save', task)
-    close()
-  }
-  
-  // Zamykanie modalu
   const close = () => {
     emit('close')
+  }
+  
+  const saveTask = () => {
+    if (!formData.value.title.trim()) return
+    
+    emit('save', {
+      id: formData.value.id || uuidv4(),
+      title: formData.value.title.trim(),
+      description: formData.value.description.trim(),
+      category: formData.value.category,
+      completed: formData.value.completed
+    })
+    
+    close()
   }
   </script>
   
@@ -138,112 +119,99 @@
     border-radius: var(--border-radius);
     width: 90%;
     max-width: 500px;
-    padding: 25px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
   }
   
   .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    padding: var(--spacing-md);
+    border-bottom: 1px solid #eee;
   }
   
   .modal-header h2 {
-    color: var(--primary-color);
     margin: 0;
+    font-size: 1.2rem;
   }
   
-  .modal-header button {
+  .close-button {
     background: none;
     border: none;
     font-size: 1.5rem;
     cursor: pointer;
-    color: #666;
+    color: var(--text-muted);
+  }
+  
+  .modal-body {
+    padding: var(--spacing-md);
   }
   
   .form-group {
-    margin-bottom: 20px;
+    margin-bottom: var(--spacing-md);
   }
   
   .form-group label {
     display: block;
-    margin-bottom: 8px;
-    font-weight: 500;
+    margin-bottom: 5px;
+    font-weight: bold;
     color: var(--text-color);
   }
   
-  .form-input {
+  .form-group input,
+  .form-group textarea {
     width: 100%;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 5px;
-    font-family: var(--font-family);
-    font-size: 16px;
+    font-family: inherit;
+    font-size: 1rem;
   }
   
-  .form-input:focus {
+  .form-group input:focus,
+  .form-group textarea:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 3px rgba(196, 30, 58, 0.3);
+    box-shadow: 0 0 0 2px rgba(196, 30, 58, 0.2);
   }
   
-  select.form-input {
-    cursor: pointer;
-  }
-  
-  .form-input.physical:focus {
-    border-color: var(--physical-color);
-    box-shadow: 0 0 3px rgba(255, 159, 41, 0.3);
-  }
-  
-  .form-input.mental:focus {
-    border-color: var(--mental-color);
-    box-shadow: 0 0 3px rgba(126, 217, 87, 0.3);
-  }
-  
-  .form-input.personal:focus {
-    border-color: var(--personal-color);
-    box-shadow: 0 0 3px rgba(255, 217, 102, 0.3);
-  }
-  
-  .form-input.relationship:focus {
-    border-color: var(--relationship-color);
-    box-shadow: 0 0 3px rgba(255, 151, 183, 0.3);
-  }
-  
-  .form-actions {
+  .modal-footer {
     display: flex;
     justify-content: flex-end;
-    gap: 15px;
-    margin-top: 25px;
+    gap: 10px;
+    margin-top: var(--spacing-md);
   }
   
   .cancel-button {
-    background-color: #f1f1f1;
-    color: #666;
-    border: none;
-    padding: 10px 15px;
+    background-color: transparent;
+    border: 1px solid #ddd;
+    color: var(--text-muted);
+    padding: 8px 15px;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
   }
   
   .cancel-button:hover {
-    background-color: #e5e5e5;
+    background-color: #f5f5f5;
   }
   
   .save-button {
     background-color: var(--primary-color);
-    color: white;
     border: none;
-    padding: 10px 20px;
+    color: white;
+    padding: 8px 15px;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
   }
   
   .save-button:hover {
-    background-color: #a0172e;
+    background-color: #a01a30;
+  }
+  
+  .save-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
   }
   </style>

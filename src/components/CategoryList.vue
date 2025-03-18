@@ -45,7 +45,7 @@
       </div>
     </div>
     
-    <!-- Modal do tworzenia/edycji zadań -->
+    <!-- Modal for creating/editing tasks -->
     <TaskCreatorModal
       v-if="showTaskCreator"
       :task="currentEditingTask"
@@ -67,12 +67,12 @@ import { v4 as uuidv4 } from 'uuid'
 import type { Task, Category } from '@/types'
 
 const taskStore = useTaskStore()
-const defaultVisibleTasks = 5 // Domyślna liczba widocznych zadań
+const defaultVisibleTasks = 5 // Default number of visible tasks
 
-// Stan dla zwijania/rozwijania kategorii
+// State for collapsing/expanding categories
 const expandedCategories = ref<Set<string>>(new Set())
 
-// Stan dla modalu tworzenia/edycji zadań
+// State for task creation/editing modal
 const showTaskCreator = ref(false)
 const currentEditingTask = ref<Task | null>(null)
 const currentCategoryType = ref<string>('')
@@ -93,7 +93,7 @@ const emit = defineEmits<{
   (e: 'complete-task', categoryType: string, taskId: string): void
 }>()
 
-// Funkcja zwracająca widoczne zadania (wszystkie lub tylko domyślną liczbę)
+// Function returning visible tasks (all or only the default number)
 const visibleTasks = (category: Category) => {
   if (isExpanded(category.type)) {
     return category.tasks
@@ -102,12 +102,12 @@ const visibleTasks = (category: Category) => {
   }
 }
 
-// Sprawdza czy kategoria jest rozwinięta
+// Check if a category is expanded
 const isExpanded = (categoryType: string) => {
   return expandedCategories.value.has(categoryType)
 }
 
-// Przełącza stan rozwinięcia kategorii
+// Toggle category expansion state
 const toggleShowMore = (categoryType: string) => {
   if (isExpanded(categoryType)) {
     expandedCategories.value.delete(categoryType)
@@ -116,7 +116,7 @@ const toggleShowMore = (categoryType: string) => {
   }
 }
 
-// Obsługa kompletności zadania
+// Handle task completion
 const toggleTaskCompletion = (categoryType: string, taskId: string) => {
   const task = findTask(categoryType, taskId)
   if (task) {
@@ -128,7 +128,7 @@ const toggleTaskCompletion = (categoryType: string, taskId: string) => {
   }
 }
 
-// Otwarcie modalu edycji zadania
+// Open task editing modal
 const editTask = (categoryType: string, taskId: string) => {
   const task = findTask(categoryType, taskId)
   if (task) {
@@ -138,14 +138,14 @@ const editTask = (categoryType: string, taskId: string) => {
   }
 }
 
-// Otwarcie modalu tworzenia nowego zadania
+// Open new task creation modal
 const openTaskCreator = (categoryType: string) => {
   currentEditingTask.value = null
   currentCategoryType.value = categoryType
   showTaskCreator.value = true
 }
 
-// Usunięcie zadania
+// Delete a task
 const deleteTask = (categoryType: string, taskId: string) => {
   if (confirm('Czy na pewno chcesz usunąć to zadanie?')) {
     taskStore.deleteTask(categoryType, taskId)
@@ -153,9 +153,9 @@ const deleteTask = (categoryType: string, taskId: string) => {
   }
 }
 
-// Zamiana zadania na inne
+// Swap a task with a new one
 const swapTask = (categoryType: string, taskId: string) => {
-  // Przykładowa pula zadań zastępczych
+  // Sample pool of replacement tasks
   const replacementTasks = {
     physical: [
       { title: "Zrób 20 przysiadów", description: "Szybka dawka ruchu dla nóg" },
@@ -179,7 +179,7 @@ const swapTask = (categoryType: string, taskId: string) => {
     ]
   }
 
-  // Losowanie nowego zadania
+  // Select a random new task
   const categoryPool = replacementTasks[categoryType as keyof typeof replacementTasks] || []
   if (categoryPool.length > 0) {
     const randomIndex = Math.floor(Math.random() * categoryPool.length)
@@ -198,20 +198,25 @@ const swapTask = (categoryType: string, taskId: string) => {
   }
 }
 
-// Zapisanie zadania (nowego lub edytowanego)
+// Save a task (new or edited)
 const saveTask = (task: Task) => {
   const isNewTask = !findTask(task.category, task.id)
   
   if (isNewTask) {
+    // Use addTask for new tasks
     taskStore.addTask(task.category, task)
     TasksService.addTask(task.category, task)
   } else {
-    taskStore.updateTask(task.category, task)
-    TasksService.updateTask(task.category, task)
+    // Use updateTask for existing tasks
+    const store = useTaskStore();
+    store.updateTask(task.category, task);
+    TasksService.updateTask(task.category, task);
   }
+  
+  showTaskCreator.value = false
 }
 
-// Pomocnicza funkcja do odnajdywania zadania
+// Helper function to find a task
 const findTask = (categoryType: string, taskId: string) => {
   const category = taskStore.categories.find(cat => cat.type === categoryType)
   return category?.tasks.find(task => task.id === taskId)
