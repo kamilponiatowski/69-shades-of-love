@@ -1,0 +1,27 @@
+:root {
+    /* Primary Colors */
+    --primary-color: #C41E3A;
+    --secondary-color: #8A2BE2;
+    
+    /* Accent Colors */
+    --physical-color: #FF9F29;
+    --mental-color: #7ED957;
+    --personal-color: #FFD966;
+    --relationship-color: #FF97B7;
+    
+    /* Neutrals */
+    --background-color: #FFF0F5;
+    --text-color: #333;
+    --text-muted: #666;
+    
+    /* Shadows */
+    --shadow-light: rgba(0, 0, 0, 0.1);
+    --shadow-medium: rgba(0, 0, 0, 0.2);
+    
+    /* Typography */
+    --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --font-size-base: 16px;
+    
+    /* Transitions */
+    --transition-speed: 0.3s;
+  }
