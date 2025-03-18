@@ -1,98 +1,109 @@
-# 69 Shades of Love: Self-Care Application
+# 69 Shades of Love - Self-Care Tracking Application
 
-## Project Overview
+![69 Shades of Love Banner](https://i.ibb.co/k2TMGWD/banner.png)
 
-The 69 Shades of Love is a comprehensive self-care tracking application designed to help users maintain and improve their physical, mental, personal, and relationship well-being through a structured, engaging approach.
+A comprehensive self-care tracking application designed to help users maintain and improve their physical, mental, personal, and relationship well-being through a structured, engaging approach.
 
-## Modular Architecture
+## ✨ Features
 
-### Architecture Principles
-- **Separation of Concerns**: Each module handles a specific aspect of the application
-- **Dependency Injection**: Services are decoupled and can be easily maintained or replaced
-- **Single Responsibility Principle**: Each class and service has a clear, focused purpose
+- **Multi-Language Support**: Switch between English and Polish
+- **Category-Based Tasks**: Organized into Physical, Mental, Personal, and Relationship categories
+- **Progress Tracking**: Visual progress bars and completion statistics
+- **Achievement System**: Get rewarded for reaching milestones
+- **Persistence**: All data saves to local storage automatically
+- **Streak Tracking**: Maintain your daily self-care routine
+- **Interactive Elements**: Engaging animations and duck jokes
 
-### Core Modules
-
-1. **Configuration Module** (`config.js`)
-   - Centralized application constants
-   - Color palette definitions
-   - Global configuration settings
-
-2. **Translation Service** (`translationService.js`)
-   - Manages multi-language support
-   - Handles text translations
-   - Detects user's preferred language
-
-3. **Storage Service** (`storageService.js`)
-   - Manages local storage interactions
-   - Handles data persistence
-   - Provides methods for saving and loading application state
-
-4. **Tasks Service** (`tasksService.js`)
-   - Manages task-related operations
-   - Tracks task completion
-   - Calculates progress and statistics
-
-5. **Achievement Service** (`achievementService.js`)
-   - Manages achievement and milestone tracking
-   - Generates achievement notifications
-   - Handles special rewards
-
-6. **Animation Service** (`animationService.js`)
-   - Manages visual animations
-   - Handles heart and confetti animations
-   - Provides visual feedback for user interactions
-
-7. **Jokes Service** (`jokesService.js`)
-   - Manages duck-themed jokes
-   - Provides audio playback
-   - Supports multi-language joke selection
-
-8. **Streak Service** (`streakService.js`)
-   - Tracks user's consecutive day streaks
-   - Manages streak-related calculations
-
-9. **Main Application Controller** (`app.js`)
-   - Coordinates interactions between services
-   - Manages application state
-   - Handles core application logic
-
-## Key Features
-
-- Multi-language support
-- Comprehensive self-care task tracking
-- Achievement and milestone system
-- Persistent local storage
-- Engaging animations and rewards
-- Streak tracking
-
-## Technology Stack
-
-- Vue.js 3
-- JavaScript (ES6+)
-- Local Storage API
-
-## Getting Started
+## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js
-- Vue.js 3
-- Modern web browser
+
+- Node.js (v18.0.0 or higher)
+- npm or yarn
 
 ### Installation
+
 1. Clone the repository
+   ```bash
+   git clone https://github.com/yourusername/69-shades-of-love.git
+   cd 69-shades-of-love
+   ```
+
 2. Install dependencies
-3. Run the application
+   ```bash
+   npm install
+   # or
+   yarn
+   ```
 
-## Contributing
+3. Start the development server
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   ```
 
-Please read CONTRIBUTING.md for details on our code of conduct and the process for submitting pull requests.
+4. Open your browser and navigate to `http://localhost:3000`
 
-## License
+### Building for Production
 
-This project is licensed under the MIT License - see the LICENSE.md file for details.
+```bash
+npm run build
+# or
+yarn build
+```
 
-## Acknowledgments
+## 🏗️ Project Structure
+
+```
+/
+├── public/             # Static assets
+├── src/
+│   ├── assets/         # Application assets
+│   │   └── styles/     # Global CSS styles
+│   ├── components/     # Vue components
+│   ├── config/         # Application configuration
+│   ├── services/       # Service modules
+│   ├── stores/         # Pinia stores
+│   ├── types/          # TypeScript type definitions
+│   ├── utils/          # Utility functions
+│   ├── App.vue         # Main application component
+│   └── main.ts         # Application entry point
+├── index.html          # HTML entry
+├── tsconfig.json       # TypeScript configuration
+└── vite.config.ts      # Vite configuration
+```
+
+## 🧩 Modular Architecture
+
+- **Configuration Module**: Centralized application constants
+- **Translation Service**: Manages multi-language support (EN/PL)
+- **Storage Service**: Manages local storage persistence
+- **Tasks Service**: Handles task-related operations
+- **Achievement Service**: Tracks milestones and achievements
+- **Animation Service**: Provides visual feedback animations
+- **Jokes Service**: Delivers duck-themed jokes
+- **Streak Service**: Tracks consecutive day streaks
+
+## 🧠 The Philosophy Behind the App
+
+The "69 Shades of Love" application is built around the concept that self-care is not just about physical health, but about achieving balance across multiple dimensions of well-being. The number 69 represents the harmony and reciprocity needed between different aspects of our lives.
+
+Each category is represented by heart icons in different colors, symbolizing that love for oneself comes in many forms and should be expressed through various types of care.
+
+## 🛠️ Technology Stack
+
+- Vue 3 (Composition API)
+- TypeScript
+- Pinia for state management
+- Vite as build tool
+- CSS with custom variables for theming
+
+## 📝 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🦆 Acknowledgments
 
 - Created with ❤️ by WTQ (What The Quack)
 - Inspired by the journey of self-care and personal growth

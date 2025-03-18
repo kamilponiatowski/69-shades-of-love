@@ -1,5 +1,8 @@
 import { v4 as uuidv4 } from 'uuid'
 import type { Category } from '@/types'
+import { COLOR_PALETTE } from './colors'
+
+export { COLOR_PALETTE }
 
 export const APP_CONFIG = {
     APP_NAME: '69 Shades of Love',
@@ -11,12 +14,7 @@ export const APP_CONFIG = {
         TASKS: 'selfCareData_v2',
         STREAK: 'streakData_v2',
         LANGUAGE: 'app_language'
-    },
-    DIFFICULTY_LEVELS: [
-        { value: 'easy', label: '🟢 Łatwe' },
-        { value: 'medium', label: '🟠 Średnie' },
-        { value: 'hard', label: '🔴 Trudne' }
-      ]
+    }
 }
 
 export const INITIAL_CATEGORIES: Category[] = [

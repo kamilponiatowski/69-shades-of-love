@@ -4,7 +4,15 @@ class AnimationService {
   private heartContainer: HTMLElement | null = null
 
   initializeHeartContainer(): void {
+    // Try to find an existing container
     this.heartContainer = document.querySelector('.heart-container')
+    
+    // If not found, create it
+    if (!this.heartContainer) {
+      this.heartContainer = document.createElement('div')
+      this.heartContainer.className = 'heart-container'
+      document.body.appendChild(this.heartContainer)
+    }
   }
 
   createHeart(category: string): void {
