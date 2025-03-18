@@ -1,13 +1,11 @@
 import { v4 as uuidv4 } from 'uuid'
 import type { Category } from '@/types'
-import { COLOR_PALETTE } from './colors'
-
-export { COLOR_PALETTE }
+export { COLOR_PALETTE } from './colors'
 
 export const APP_CONFIG = {
     APP_NAME: '69 Shades of Love',
     VERSION: '2.0.0',
-    LANGUAGES: ['en', 'pl'] as const,
+    LANGUAGES: ['en', 'pl'],
     TASK_CATEGORIES: ['physical', 'mental', 'personal', 'relationship'],
     MILESTONES: [5, 10, 25, 40, 69],
     STORAGE_KEYS: {

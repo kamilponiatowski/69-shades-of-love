@@ -20,6 +20,31 @@
       <span class="task-title">{{ task.title }}</span>
       <span class="task-description">{{ task.description }}</span>
     </label>
+    <div class="task-actions">
+      <button 
+        @click.stop="editTask" 
+        class="action-button edit-button" 
+        :disabled="task.completed"
+        :aria-label="'Edytuj zadanie: ' + task.title"
+      >
+        ✏️
+      </button>
+      <button 
+        @click.stop="swapTask" 
+        class="action-button swap-button" 
+        :disabled="task.completed"
+        :aria-label="'Zamień zadanie: ' + task.title"
+      >
+        🔄
+      </button>
+      <button 
+        @click.stop="deleteTask" 
+        class="action-button delete-button"
+        :aria-label="'Usuń zadanie: ' + task.title"
+      >
+        🗑️
+      </button>
+    </div>
   </div>
 </template>
 
@@ -33,10 +58,29 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'toggle-complete', categoryType: string, taskId: string): void
+  (e: 'edit-task', categoryType: string, taskId: string): void
+  (e: 'delete-task', categoryType: string, taskId: string): void
+  (e: 'swap-task', categoryType: string, taskId: string): void
 }>()
 
 const toggleComplete = () => {
   emit('toggle-complete', props.categoryType, props.task.id)
+}
+
+const editTask = () => {
+  if (!props.task.completed) {
+    emit('edit-task', props.categoryType, props.task.id)
+  }
+}
+
+const deleteTask = () => {
+  emit('delete-task', props.categoryType, props.task.id)
+}
+
+const swapTask = () => {
+  if (!props.task.completed) {
+    emit('swap-task', props.categoryType, props.task.id)
+  }
 }
 </script>
 
@@ -49,11 +93,17 @@ const toggleComplete = () => {
   border-radius: 8px;
   transition: all 0.3s ease;
   background-color: #f9f9f9;
+  position: relative;
 }
 
 .task-item:hover {
   transform: translateY(-2px);
   box-shadow: 0 2px 8px var(--shadow-light);
+}
+
+.task-item:hover .task-actions {
+  opacity: 1;
+  transform: translateX(0);
 }
 
 .checkbox-container {
@@ -125,6 +175,7 @@ const toggleComplete = () => {
   flex-direction: column;
   cursor: pointer;
   flex: 1;
+  padding-right: 35px; /* Miejsce na przyciski akcji */
 }
 
 .task-title {
@@ -158,6 +209,49 @@ const toggleComplete = () => {
   animation: pulse 0.6s ease-in-out;
 }
 
+.task-actions {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%) translateX(10px);
+  display: flex;
+  gap: 5px;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.action-button {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.action-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.action-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.edit-button:hover {
+  transform: scale(1.1);
+}
+
+.delete-button:hover {
+  transform: scale(1.1);
+  color: #ff3333;
+}
+
+.swap-button:hover {
+  transform: scale(1.1) rotate(180deg);
+}
+
 @keyframes pulse {
   0% {
     transform: scale(1);
@@ -167,6 +261,17 @@ const toggleComplete = () => {
   }
   100% {
     transform: scale(1);
+  }
+}
+
+@media (max-width: 480px) {
+  .task-actions {
+    opacity: 0.7;
+    transform: translateY(-50%) translateX(0);
+  }
+  
+  .action-button {
+    font-size: 0.9rem;
   }
 }
 </style>

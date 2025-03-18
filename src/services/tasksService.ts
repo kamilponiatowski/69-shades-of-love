@@ -55,6 +55,48 @@ class TasksService {
     }
   }
 
+  // Dodaj nowe zadanie
+  addTask(categoryType: string, task: Task): void {
+    const category = this.categories.value.find(cat => cat.type === categoryType)
+    if (category) {
+      category.tasks.push(task)
+      this.saveTasks()
+    }
+  }
+
+  // Zaktualizuj istniejące zadanie
+  updateTask(categoryType: string, updatedTask: Task): void {
+    const category = this.categories.value.find(cat => cat.type === categoryType)
+    if (category) {
+      const index = category.tasks.findIndex(t => t.id === updatedTask.id)
+      if (index !== -1) {
+        category.tasks[index] = updatedTask
+        this.saveTasks()
+      }
+    }
+  }
+
+  // Usuń zadanie
+  deleteTask(categoryType: string, taskId: string): void {
+    const category = this.categories.value.find(cat => cat.type === categoryType)
+    if (category) {
+      category.tasks = category.tasks.filter(t => t.id !== taskId)
+      this.saveTasks()
+    }
+  }
+
+  // Zamień zadanie na inne
+  replaceTask(categoryType: string, oldTaskId: string, newTask: Task): void {
+    const category = this.categories.value.find(cat => cat.type === categoryType)
+    if (category) {
+      const index = category.tasks.findIndex(t => t.id === oldTaskId)
+      if (index !== -1) {
+        category.tasks[index] = newTask
+        this.saveTasks()
+      }
+    }
+  }
+
   getCategoryProgress(categoryType: string): number {
     const category = this.categories.value.find(cat => cat.type === categoryType)
     if (!category) return 0

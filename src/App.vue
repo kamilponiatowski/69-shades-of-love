@@ -7,12 +7,18 @@
         <h1>{{ title }}</h1>
       </div>
       <nav>
-        <LanguageSelector />
+        <div class="nav-controls">
+          <button @click="showSettings = true" class="settings-button">
+            ⚙️ Ustawienia
+          </button>
+          <LanguageSelector />
+        </div>
       </nav>
     </header>
 
     <main>
       <ProgressContainer />
+      <StreakTracker />
       <CategoryList 
         @complete-task="handleTaskCompletion"
       />
@@ -31,6 +37,11 @@
       :joke="currentJoke"
       @close="showDuckJoke = false"
     />
+    
+    <SettingsModal
+      v-if="showSettings"
+      @close="showSettings = false"
+    />
 
     <footer>
       <p>&copy; 2024 What The Quack</p>
@@ -48,6 +59,8 @@ import CategoryList from '@/components/CategoryList.vue'
 import NotificationContainer from '@/components/NotificationContainer.vue'
 import AchievementModal from '@/components/AchievementModal.vue'
 import DuckJokePopup from '@/components/DuckJokePopup.vue'
+import SettingsModal from '@/components/SettingsModal.vue'
+import StreakTracker from '@/components/StreakTracker.vue'
 import AchievementService from '@/services/achievementService'
 import JokesService from '@/services/jokesService'
 import AnimationService from '@/services/animationService'
@@ -64,6 +77,7 @@ const showAchievement = ref(false)
 const currentAchievement = ref<Achievement | null>(null)
 const showDuckJoke = ref(false)
 const currentJoke = ref('')
+const showSettings = ref(false)
 
 // Computed values
 const completedTasksCount = computed(() => taskStore.completedTasksCount)
@@ -143,5 +157,36 @@ footer {
   padding: var(--spacing-md);
   color: var(--text-muted);
   font-size: 0.9rem;
+}
+
+.nav-controls {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.settings-button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background-color: transparent;
+  border: 1px solid #ddd;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.settings-button:hover {
+  background-color: #f0f0f0;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--shadow-light);
 }
 </style>
