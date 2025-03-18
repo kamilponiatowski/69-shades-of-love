@@ -51,7 +51,7 @@ const categoryProgress = computed(() => {
   return Math.round((completedTasks / totalTasks) * 100) || 0
 })
 
-const getCategoryIcon = (type: string) => {
+const getCategoryIcon = (type: string): string => {
   const icons: Record<string, string> = {
     physical: '💪',
     mental: '🧠',

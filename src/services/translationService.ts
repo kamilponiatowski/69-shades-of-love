@@ -1,4 +1,8 @@
+import { APP_CONFIG } from '@/config'
 import type { TranslationMap } from '@/types'
+
+// Definiujemy typ Language na podstawie wartości w tablicy LANGUAGES
+type Language = typeof APP_CONFIG.LANGUAGES[number]
 
 class TranslationService {
   private translations: TranslationMap = {
@@ -72,13 +76,13 @@ class TranslationService {
     }
   }
 
-  getCurrentLanguage(): 'en' | 'pl' {
-    const savedLanguage = localStorage.getItem('app_language')
-    return savedLanguage === 'pl' ? 'pl' : 'en'
+  getCurrentLanguage(): Language {
+    const savedLanguage = localStorage.getItem(APP_CONFIG.STORAGE_KEYS.LANGUAGE)
+    return (savedLanguage === 'pl' ? 'pl' : 'en') as Language
   }
 
-  setLanguage(language: 'en' | 'pl'): void {
-    localStorage.setItem('app_language', language)
+  setLanguage(language: Language): void {
+    localStorage.setItem(APP_CONFIG.STORAGE_KEYS.LANGUAGE, language)
   }
 
   translate(key: string, params?: Record<string, any>): string {
@@ -101,6 +105,10 @@ class TranslationService {
     }
 
     return languageTranslation
+  }
+  
+  getAvailableLanguages(): Language[] {
+    return [...APP_CONFIG.LANGUAGES]
   }
 }
 

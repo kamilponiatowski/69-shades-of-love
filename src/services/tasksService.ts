@@ -1,61 +1,76 @@
-import { APP_CONFIG } from '@/config'
-import type { Category, StreakInfo } from '@/types'
+import { ref, computed } from 'vue'
+import { INITIAL_CATEGORIES } from '@/config'
+import type { Category, Task } from '@/types'
+import StorageService from './storageService'
 
-class StorageService {
-  private storageKeys = APP_CONFIG.STORAGE_KEYS
+class TasksService {
+  private categories = ref<Category[]>([])
 
-  saveTasks(categories: Category[]): void {
-    try {
-      localStorage.setItem(
-        this.storageKeys.TASKS, 
-        JSON.stringify(categories)
-      )
-    } catch (error) {
-      console.error('Error saving tasks:', error)
+  constructor() {
+    this.initializeTasks()
+  }
+
+  private initializeTasks(): void {
+    const savedTasks = StorageService.loadTasks()
+    this.categories.value = savedTasks || INITIAL_CATEGORIES
+  }
+
+  getAllCategories(): Category[] {
+    return this.categories.value
+  }
+
+  getTotalTasksCount(): number {
+    return this.categories.value.reduce(
+      (total, category) => total + category.tasks.length, 
+      0
+    )
+  }
+
+  getTotalCompletedTasksCount(): number {
+    return this.categories.value.reduce(
+      (total, category) => total + category.tasks.filter(task => task.completed).length, 
+      0
+    )
+  }
+
+  completeTask(categoryType: string, taskId: string): void {
+    const category = this.categories.value.find(cat => cat.type === categoryType)
+    if (category) {
+      const task = category.tasks.find(t => t.id === taskId)
+      if (task) {
+        task.completed = true
+        this.saveTasks()
+      }
     }
   }
 
-  loadTasks(): Category[] | null {
-    try {
-      const savedTasks = localStorage.getItem(this.storageKeys.TASKS)
-      return savedTasks ? JSON.parse(savedTasks) : null
-    } catch (error) {
-      console.error('Error loading tasks:', error)
-      return null
+  uncompleteTask(categoryType: string, taskId: string): void {
+    const category = this.categories.value.find(cat => cat.type === categoryType)
+    if (category) {
+      const task = category.tasks.find(t => t.id === taskId)
+      if (task) {
+        task.completed = false
+        this.saveTasks()
+      }
     }
   }
 
-  saveStreak(streakInfo: StreakInfo): void {
-    try {
-      localStorage.setItem(
-        this.storageKeys.STREAK, 
-        JSON.stringify(streakInfo)
-      )
-    } catch (error) {
-      console.error('Error saving streak:', error)
-    }
+  getCategoryProgress(categoryType: string): number {
+    const category = this.categories.value.find(cat => cat.type === categoryType)
+    if (!category) return 0
+    
+    const completedTasks = category.tasks.filter(task => task.completed).length
+    return Math.round((completedTasks / category.tasks.length) * 100) || 0
   }
 
-  loadStreak(): StreakInfo {
-    try {
-      const savedStreak = localStorage.getItem(this.storageKeys.STREAK)
-      return savedStreak 
-        ? JSON.parse(savedStreak) 
-        : { days: 0, lastCheckDate: null }
-    } catch (error) {
-      console.error('Error loading streak:', error)
-      return { days: 0, lastCheckDate: null }
-    }
+  resetAllTasks(): void {
+    this.categories.value = JSON.parse(JSON.stringify(INITIAL_CATEGORIES))
+    this.saveTasks()
   }
 
-  clearAllData(): void {
-    try {
-      localStorage.removeItem(this.storageKeys.TASKS)
-      localStorage.removeItem(this.storageKeys.STREAK)
-    } catch (error) {
-      console.error('Error clearing data:', error)
-    }
+  private saveTasks(): void {
+    StorageService.saveTasks(this.categories.value)
   }
 }
 
-export default new StorageService()
+export default new TasksService()

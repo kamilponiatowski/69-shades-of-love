@@ -7,7 +7,7 @@ export { COLOR_PALETTE }
 export const APP_CONFIG = {
     APP_NAME: '69 Shades of Love',
     VERSION: '2.0.0',
-    LANGUAGES: ['en', 'pl'],
+    LANGUAGES: ['en', 'pl'] as const,
     TASK_CATEGORIES: ['physical', 'mental', 'personal', 'relationship'],
     MILESTONES: [5, 10, 25, 40, 69],
     STORAGE_KEYS: {

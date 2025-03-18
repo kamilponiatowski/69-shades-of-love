@@ -52,6 +52,7 @@ import AchievementService from '@/services/achievementService'
 import JokesService from '@/services/jokesService'
 import AnimationService from '@/services/animationService'
 import StreakService from '@/services/streakService'
+import TasksService from '@/services/tasksService'
 import type { Achievement } from '@/types'
 
 // Store
@@ -69,7 +70,10 @@ const completedTasksCount = computed(() => taskStore.completedTasksCount)
 
 // Task completion handler
 const handleTaskCompletion = (categoryType: string, taskId: string) => {
+  // Używamy zarówno store (dla reaktywności UI), jak i serwisu (dla trwałego zapisu)
   taskStore.completeTask(categoryType, taskId)
+  TasksService.completeTask(categoryType, taskId)
+  
   AnimationService.triggerMultiHeartAnimation(categoryType)
   
   // Update streak
